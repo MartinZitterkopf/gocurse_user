@@ -11,6 +11,8 @@ require (
 	gorm.io/gorm v1.24.5
 )
 
+require github.com/MartinZitterkopf/gocurse_library_response v0.0.2
+
 require (
 	github.com/go-kit/kit v0.12.0
 	github.com/go-kit/log v0.2.0 // indirect
