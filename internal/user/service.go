@@ -11,7 +11,7 @@ type (
 	Service interface {
 		Create(ctx context.Context, firstName, lastName, email, phone string) (*domain.User, error)
 		GetAll(ctx context.Context, filters Fillters, offset, limit int) ([]domain.User, error)
-		Get(ctx context.Context, id string) (*domain.User, error)
+		GetByID(ctx context.Context, id string) (*domain.User, error)
 		Delete(ctx context.Context, id string) error
 		Update(ctx context.Context, id string, firstName *string, lastName *string, email *string, phone *string) error
 		Count(ctx context.Context, filters Fillters) (int, error)
@@ -62,8 +62,8 @@ func (s service) GetAll(ctx context.Context, filters Fillters, offset, limit int
 	return users, nil
 }
 
-func (s service) Get(ctx context.Context, id string) (*domain.User, error) {
-	user, err := s.repo.Get(ctx, id)
+func (s service) GetByID(ctx context.Context, id string) (*domain.User, error) {
+	user, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		s.log.Println(err)
 		return nil, err
