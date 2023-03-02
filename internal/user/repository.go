@@ -36,14 +36,15 @@ func NewRepo(log *log.Logger, db *gorm.DB) Repository {
 func (repo *repo) Create(ctx context.Context, user *domain.User) error {
 
 	if err := repo.db.WithContext(ctx).Create(user).Error; err != nil {
-		repo.log.Println(err)
+		repo.log.Printf("error; %v", err)
 		return err
 	}
-	repo.log.Println("User created with id: ", user.ID)
+	repo.log.Println("user created with id: ", user.ID)
 	return nil
 }
 
 func (repo *repo) GetAll(ctx context.Context, filters Fillters, offset, limit int) ([]domain.User, error) {
+
 	var u []domain.User
 
 	tx := repo.db.WithContext(ctx).Model(&u)
@@ -60,14 +61,15 @@ func (repo *repo) GetAll(ctx context.Context, filters Fillters, offset, limit in
 }
 
 func (repo *repo) GetByID(ctx context.Context, id string) (*domain.User, error) {
+
 	user := domain.User{ID: id}
 
 	if err := repo.db.WithContext(ctx).First(&user).Error; err != nil {
 		repo.log.Println(err)
-
 		if err == gorm.ErrRecordNotFound {
 			return nil, ErrNotFound{id}
 		}
+
 		return nil, err
 	}
 
@@ -75,10 +77,10 @@ func (repo *repo) GetByID(ctx context.Context, id string) (*domain.User, error) 
 }
 
 func (repo *repo) Delete(ctx context.Context, id string) error {
+
 	user := domain.User{ID: id}
 
 	result := repo.db.WithContext(ctx).Delete(&user)
-
 	if result.Error != nil {
 		repo.log.Println(result.Error)
 		return result.Error
@@ -93,6 +95,7 @@ func (repo *repo) Delete(ctx context.Context, id string) error {
 }
 
 func (repo *repo) Update(ctx context.Context, id string, firstName *string, lastName *string, email *string, phone *string) error {
+
 	values := make(map[string]interface{})
 
 	if firstName != nil {
@@ -112,7 +115,6 @@ func (repo *repo) Update(ctx context.Context, id string, firstName *string, last
 	}
 
 	result := repo.db.WithContext(ctx).Model(&domain.User{}).Where("id = ?", id).Updates(values)
-
 	if result.Error != nil {
 		repo.log.Println(result.Error)
 		return result.Error
@@ -127,6 +129,7 @@ func (repo *repo) Update(ctx context.Context, id string, firstName *string, last
 }
 
 func applyFilters(tx *gorm.DB, filters Fillters) *gorm.DB {
+
 	if filters.FirstName != "" {
 		filters.FirstName = fmt.Sprintf("%%%s%%", strings.ToLower(filters.FirstName))
 		tx = tx.Where("lower(first_name) like ?", filters.FirstName)
@@ -141,10 +144,11 @@ func applyFilters(tx *gorm.DB, filters Fillters) *gorm.DB {
 }
 
 func (repo *repo) Count(ctx context.Context, filters Fillters) (int, error) {
+
 	var count int64
 	tx := repo.db.WithContext(ctx).Model(domain.User{})
-	tx = applyFilters(tx, filters)
 
+	tx = applyFilters(tx, filters)
 	if err := tx.Count(&count).Error; err != nil {
 		repo.log.Println(err)
 		return 0, err
