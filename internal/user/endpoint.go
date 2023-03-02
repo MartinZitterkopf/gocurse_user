@@ -49,13 +49,6 @@ type (
 		ID string
 	}
 
-	Response struct {
-		Status int         `json:"status"`
-		Data   interface{} `json:"data,omitempty"`
-		Err    string      `json:"error,omitempty"`
-		Meta   *meta.Meta  `json:"meta,omitempty"`
-	}
-
 	Config struct {
 		PageLimDefault string
 	}
@@ -94,7 +87,6 @@ func makeCreateEnpoint(s Service) Controller {
 
 func makeGetAllEnpoint(s Service, config Config) Controller {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-
 		req := request.(GetAllReq)
 
 		filters := Fillters{
